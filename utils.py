@@ -15,11 +15,16 @@ def _bytes_feature(value):
 def convert_to(data_set, name):
   """Converts a dataset to tfrecords."""
   
-  num = dataset.num
+  images = data_set.images
   labels = data_set.labels
-  width = data_set.width
-  height = data_set.height
-  images = data_set.images    
+  num_examples = data_set.num_examples
+  
+  if images.shape[0] != num_examples:
+  raise ValueError('Images size %d does not match label size %d.' %
+                     (images.shape[0], num_examples))
+  rows = images.shape[1]
+  cols = images.shape[2]
+  depth = images.shape[3]
 
   filename = os.path.join(FLAGS.directory, name + '.tfrecords')
   print('Writing', filename)
