@@ -138,6 +138,8 @@ def extract_pnt(PNT_PATH, one_hot=False, num_classes=labels_num):
     ValueError: If the bytestream does not start with 2051.
   """
   print('Extracting', f.name)
+  import Image
+  
   PNTfiles = os.listdir(PNT_PATH)
   SmpLen = 0
   SmpNum = 0
@@ -152,22 +154,18 @@ def extract_pnt(PNT_PATH, one_hot=False, num_classes=labels_num):
             buf = f.read(rows * cols)
             data = numpy.frombuffer(buf, dtype=numpy.uint8)
             images[SmpNum] = data.reshape(cols, rows, 1)
+            
+            #图像压缩,宽归一化为100
+            cols = 60
+            rows = images[SmpNum].shape[0]*60/images[SmpNum].shape[1]
+            images[SmpNum]=images[SmpNum].resize(cols,rows)
             SmpLen = SmpLen + TmpLen
             TmpNum = TmpNum + 1
             if one_hot:
               return dense_to_one_hot(labels, num_classes)
             return images,labels
-
-  #图像压缩,宽归一化为100
-  import Image
-  for i in range(SmpNum):
-    cols = 60
-    rows = images[i].shape[0]*60/images[i].shape[1]
-    images[i]=images[i].resize(cols,rows)
     
-        
-        
-        
+            
 class DataSet(object):
 
   def __init__(self,
